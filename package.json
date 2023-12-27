@@ -1,0 +1,19 @@
+{
+	"name": "lucasserrano.scene-management-extensions",
+	"displayName": "Scene Management Extensions",
+	"version":"1.0.0",
+	"description": "Package that adds scene management functionality.",
+	"author": {
+		"name" : "S. Lucas Serrano",
+		"email" : "Lucas.ss.Sesrrano@Gmail.com",
+		"url" : "https://github.com/S-LucasSerrano"
+	},
+
+	"samples":[
+		{
+			"displayName":"Basic Usage",
+			"description":"Simple example showing how to use the package.",
+			"path":"Sample"
+		}
+	]
+}
