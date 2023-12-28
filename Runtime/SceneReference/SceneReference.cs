@@ -36,6 +36,7 @@ namespace UnityEngine.SceneManagement
 
 
 		// -----------------------------------------------------------------
+		#region Load Scene
 
 		/// <summary> Load the scene this object is referencing. </summary>
 		public void LoadScene()
@@ -53,7 +54,10 @@ namespace UnityEngine.SceneManagement
 			SceneManager.LoadScene(SceneName, parameters);
 		}
 
+		#endregion
+
 		// ----------
+		#region Transition To Scene
 
 		/// <summary> Load a scene after playing a transition effect found in the scene. </summary>
 		public void TransitionToScene()
@@ -72,6 +76,8 @@ namespace UnityEngine.SceneManagement
 		{
 			_usingTransition = true;
 			_transitionEffect = transitionEffect;
+
+			SceneManager.sceneLoaded -= OnSceneLoaded;
 			SceneManager.sceneLoaded += OnSceneLoaded;
 
 			if (transitionEffect == null)
@@ -104,8 +110,11 @@ namespace UnityEngine.SceneManagement
 			SceneManager.sceneLoaded -= OnSceneLoaded;
 		}
 
+		#endregion
+
 
 		// -----------------------------------------------------------------
+		#region Utilities
 
 		/// <summary> If it's loaded, returns the <see cref="Scene"/> referenced by this object. <br/>
 		/// If not, returns an invalid <see cref="Scene"/>. </summary>
@@ -113,14 +122,13 @@ namespace UnityEngine.SceneManagement
 		{
 			return SceneManager.GetSceneByName(SceneName);
 		}
+
+		#endregion
 	}
 }
 
 /*
  TO DO:
-
-	SCENE LOADING BAR
-		que muestra en el fill amount the una imagen de la ui el progreso de carga de la escena.
 	
 	LOAD SCENE AUTOMATICALLY
 		Componente LoadSceneAutomatically para cargar escenas en el start.		
@@ -130,6 +138,9 @@ namespace UnityEngine.SceneManagement
 		
 
 	(Usar [AddComponentMenu] en todos lados)
+
+	Buscar icono para scene fader
+	Buscar o hacer mejor el icono del loading screen
 
 	Preparar las Samples
 	Documentacion

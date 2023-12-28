@@ -34,7 +34,7 @@ namespace UnityEngine.SceneManagement
 		[SerializeField][Min(0)] public float MinLoadingTime = 0;
 
 		/// <summary> The scene that will be loaded after the loading screen. </summary>
-		private string _targetScene;
+		private string _targetSceneName;
 		/// <summary> Progress of the async loading process. </summary>
 		public static float LoadingProgress => _loadingProgress;
 		private static float _loadingProgress;
@@ -45,6 +45,7 @@ namespace UnityEngine.SceneManagement
 
 
 		// -----------------------------------------------------------------
+		#region Load Scene
 
 		/// <summary> Load target scene using this loading screen. </summary>
 		public void LoadScene(SceneReference targetScene)
@@ -54,13 +55,18 @@ namespace UnityEngine.SceneManagement
 
 		public void LoadScene(string targetScene)
 		{
-			_targetScene = targetScene;
+			_targetSceneName = targetScene;
+
+			SceneManager.sceneLoaded -= OnSceneLoaded;
 			SceneManager.sceneLoaded += OnSceneLoaded;
 
 			SceneManager.LoadScene(LoadingSceneName);
 		}
 
+		#endregion
+
 		// ----------
+		#region Transition To Scene
 
 		/// <summary> Load target scene using this loading screen and playing a transition effect found in the scene. </summary>
 		public void TransitionToScene(SceneReference targetScene)
@@ -91,15 +97,26 @@ namespace UnityEngine.SceneManagement
 				transitionEffect.AnimateTransitionTo(true, ()=>LoadScene(targetScene));
 		}
 
+		#endregion
+
 		// ----------
+		#region Loading Screen
 
 		/// Function called when a scene is loaded.
 		private void OnSceneLoaded(Scene scene, LoadSceneMode loadMode)
 		{
-			if (scene.name == _targetScene)
-				OnTargetSceneLoaded();
-			else if (scene.name == LoadingSceneName)
+			if (scene.name == LoadingSceneName)
 				OnLoadingSceneLoaded();
+			else if (scene.name == _targetSceneName)
+				OnTargetSceneLoaded();
+		}
+
+		private void OnLoadingSceneLoaded()
+		{
+			var gameObj = new GameObject("Loading Screen Corutiner");
+			var component = gameObj.AddComponent<LoadingScreenComponent>();
+
+			component.StartCoroutine(AsyncLoadingRoutine());
 		}
 
 		private void OnTargetSceneLoaded()
@@ -113,16 +130,13 @@ namespace UnityEngine.SceneManagement
 					_transitionEffect.AnimateTransitionTo(false);
 			}
 
-			_targetScene = null;
+			_targetSceneName = null;
 			_loadingProgress = 0;
-		}
 
-		private void OnLoadingSceneLoaded()
-		{
-			var gameObj = new GameObject("Loading Screen Corutiner");
-			var component = gameObj.AddComponent<LoadingScreenComponent>();
+			_usingTransition = false;
+			_transitionEffect = null;
 
-			component.StartCoroutine(AsyncLoadingRoutine());
+			SceneManager.sceneLoaded -= OnSceneLoaded;
 		}
 
 		/// Coroutine that loads the target scene asyncronously.
@@ -145,7 +159,7 @@ namespace UnityEngine.SceneManagement
 
 			// Load the target scene in the background.
 			Application.backgroundLoadingPriority = ThreadPriority.Low;
-			AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(_targetScene);
+			AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(_targetSceneName);
 			asyncLoad.allowSceneActivation = false;
 
 			while (_loadingProgress < 0.9f)
@@ -181,6 +195,8 @@ namespace UnityEngine.SceneManagement
 			_loadingProgress = 1;
 			asyncLoad.allowSceneActivation = true;
 		}
+
+		#endregion
 
 
 		// -----------------------------------------------------------------

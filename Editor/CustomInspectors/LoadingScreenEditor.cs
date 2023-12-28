@@ -52,6 +52,7 @@ namespace UnityEditor.SceneManagement
 
 			EditorGUILayout.Space();
 			EditorGUILayout.PropertyField(sceneAssetProperty);
+			EditorGUILayout.PropertyField(serializedObject.FindProperty("MinLoadingTime"));
 
 			serializedObject.ApplyModifiedProperties();
 
