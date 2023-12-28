@@ -1,8 +1,7 @@
 using System.Collections;
-using UnityEngine;
 using UnityEngine.Events;
 
-namespace SceneManagementExtensions
+namespace UnityEngine.SceneManagement
 {
 	/// <summary> Component that animates an effect meant to decorate the change between scenes. </summary>
 	public abstract class SceneTransitionEffect : MonoBehaviour
@@ -23,6 +22,7 @@ namespace SceneManagementExtensions
 		/// <param name="targetValue"> If true the effect appears, if false the effect disappears. </param>
 		public void AnimateTransitionTo(bool targetValue) => AnimateTransitionTo(targetValue, null);
 
+		/// <summary> Play this transition effect. </summary>
 		/// <param name="onCompleted"> Callback invoked when the animation is completed. </param>
 		public void AnimateTransitionTo(bool targetValue, UnityAction onCompleted)
 		{
@@ -61,8 +61,9 @@ namespace SceneManagementExtensions
 			onCompleted?.Invoke();
 		}
 
+		// ---------
 
-		/// <summary> Set the transition effect at the final state without animation. </summary>
+		/// <summary> Set the transition effect without animation. </summary>
 		/// <param name="targetValue"> If true the effect appears, if false the effect disappears. </param>
 		public void SetTo(bool targetValue)
 		{
@@ -71,6 +72,8 @@ namespace SceneManagementExtensions
 			TransitionValue = targetValue == true ? 1 : 0;
 		}
 
+
+		// -----------------------------------------------------------------
 
 		/// <summary> Transition value that changes with the animation in the range of 0 to 1. 
 		/// <br/> At 1 the effect is visible, at 0 is invisible. </summary>

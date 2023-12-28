@@ -1,14 +1,13 @@
-using UnityEngine;
 using UnityEngine.UI;
 
-namespace SceneManagementExtensions
+namespace UnityEngine.SceneManagement
 {
 	/// <summary> Scene transition effect that fades the alpha of an UI image. </summary>
 	
 	[AddComponentMenu("Scene Management/Screen Fader")]
 	public class ScreenFader : SceneTransitionEffect
 	{
-		[Space] [SerializeField] public Image Image = null;
+		[SerializeField] public Image Image = null;
 
 
 		private void Reset()

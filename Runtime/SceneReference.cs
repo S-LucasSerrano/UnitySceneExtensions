@@ -1,17 +1,11 @@
-using UnityEngine;
-using UnityEngine.SceneManagement;
 
-namespace SceneManagementExtensions
+namespace UnityEngine.SceneManagement
 {
 	/// <summary> Scriptable object that allows loading a specific scene. </summary>
 
 	[CreateAssetMenu(order =201, menuName="Scene Reference", fileName="NewSceneReference")]
 	public class SceneReference : ScriptableObject
 	{
-		/// <summary> Name of the scene referenced by this object. </summary>
-		[SerializeField, HideInInspector] public string SceneName = "";
-
-
 		// -----------------------------------------------------------------
 		#region Editor
 
@@ -22,15 +16,26 @@ namespace SceneManagementExtensions
 		private void OnValidate()
 		{
 			SceneName = sceneAsset != null ? sceneAsset.name : "";
+			ScenePath = UnityEditor.AssetDatabase.GetAssetPath(sceneAsset);
 		}
 
 #endif
 
 		#endregion
 
+		// ----------
+
+		/// <summary> Name of the scene referenced by this object. </summary>
+		[SerializeField, HideInInspector] public string SceneName = "";
+		/// <summary> Path of the scene referenced by this object relative to the project folder. </summary>
+		[SerializeField, HideInInspector] public string ScenePath = "";
+
+		/// If we are using or not a transition effect to change between scenes.
+		private bool _usingTransition = false;
+		private SceneTransitionEffect _transitionEffect = null;
+
 
 		// -----------------------------------------------------------------
-		#region Load Scene
 
 		/// <summary> Load the scene this object is referencing. </summary>
 		public void LoadScene()
@@ -48,15 +53,10 @@ namespace SceneManagementExtensions
 			SceneManager.LoadScene(SceneName, parameters);
 		}
 
-		#endregion
-
-		#region Fade To Scene
-
-		private bool _usingTransition = false;
-		private SceneTransitionEffect _transitionEffect = null;
+		// ----------
 
 		/// <summary> Load a scene after playing a transition effect found in the scene. </summary>
-		public void FadeToScene()
+		public void TransitionToScene()
 		{
 			SceneTransitionEffect transitionEffect = FindObjectOfType<SceneTransitionEffect>(false);
 			if (transitionEffect == null)
@@ -64,11 +64,11 @@ namespace SceneManagementExtensions
 				Debug.Log("Couldn't find a " + typeof(SceneTransitionEffect).Name + " while unloading " + SceneManager.GetActiveScene().name + ".");
 			}
 
-			FadeToScene(transitionEffect);
+			TransitionToScene(transitionEffect);
 		}
 
 		/// <summary> Load a scene after playing a transition efffect. </summary>
-		public void FadeToScene(SceneTransitionEffect transitionEffect)
+		public void TransitionToScene(SceneTransitionEffect transitionEffect)
 		{
 			_usingTransition = true;
 			_transitionEffect = transitionEffect;
@@ -83,6 +83,8 @@ namespace SceneManagementExtensions
 				transitionEffect.AnimateTransitionTo(true, LoadScene);
 			}
 		}
+
+		// ---------
 
 		private void OnSceneLoaded(Scene scene, LoadSceneMode loadMode)
 		{
@@ -102,50 +104,33 @@ namespace SceneManagementExtensions
 			SceneManager.sceneLoaded -= OnSceneLoaded;
 		}
 
-		#endregion
-
 
 		// -----------------------------------------------------------------
-		#region Utilities
 
-		/// <summary> If loaded, returns the <see cref="Scene"/> referenced by this object. <br/>
-		/// If not, returs an invalid <see cref="Scene"/>. </summary>
+		/// <summary> If it's loaded, returns the <see cref="Scene"/> referenced by this object. <br/>
+		/// If not, returns an invalid <see cref="Scene"/>. </summary>
 		public Scene GetScene()
 		{
 			return SceneManager.GetSceneByName(SceneName);
 		}
-
-		#endregion
 	}
 }
 
 /*
  TO DO:
 
-	LOADING SCREEN
-	Y luego tenemos el sciptable object loading screen
-		que tiene un scene asset que es la escena de carga
-		el tiempo minimo
-		y funciones para decirle e cargame estas escena, y te la carga pasando primero por la escena de carga.
-			y para cargar con transicion
-			a ver cuanta duplicidad hay y si deberian tener una clase padre comun SceneLoader.
-
-		quiza haya que cambiar el nombre de FadeTo a TransitionTo en los dos scriptable object
-		asegurarse de que aparece debajo de scene reference en el CreateAssetMenu.
-
-		la variable Progress tiene que ser estatica para que cualqueira pueda checkearla con LoadingScreen.Progress.
-
-	El custom inspector que añada un boton open y ya esta.
-	Mirar si podemos cambiar el icono de los scritable object
-
 	SCENE LOADING BAR
 		que muestra en el fill amount the una imagen de la ui el progreso de carga de la escena.
-
-	El scene loader ya no existirá
-
-	Componente LoadSceneAutomatically para cargar escenas en el start.		
+	
+	LOAD SCENE AUTOMATICALLY
+		Componente LoadSceneAutomatically para cargar escenas en el start.		
+		Quiza hacerle un custom inspector para indicar: usar scene reference o nombre (mirar si es facil hacerlo por indice tambien)
+		Indicar si es usando una pantalla de carga
+		Y si es usando una transicion -> con una enum que sea: sin transicion, indicar transicion, encontrar transicion automaticamente.
+		
 
 	(Usar [AddComponentMenu] en todos lados)
 
 	Preparar las Samples
+	Documentacion
  */

@@ -1,17 +1,15 @@
 using System.Reflection;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEditor;
-using UnityEditor.SceneManagement;
 
-namespace SceneManagementExtensions.Editor
+namespace UnityEditor.SceneManagement
 {
 	/// <summary> Custom inspector for the <see cref="SceneReference"/> class. </summary>
 	[CustomEditor(typeof(SceneReference))]
-	public class SceneReferenceEditor : UnityEditor.Editor 
+	public class SceneReferenceEditor : Editor 
 	{
 		// -----------------------------------------------------------------
-		#region Project Changed
+		#region Validation
 
 		// When something changes in the project, validate all scenes references.
 
@@ -21,7 +19,7 @@ namespace SceneManagementExtensions.Editor
 			EditorApplication.projectChanged += OnProjectChanged;
 		}
 
-		public static void OnProjectChanged()
+		private static void OnProjectChanged()
 		{
 			string[] searchingPaths = { "Assets" };
 			string[] guids = AssetDatabase.FindAssets("t:" + typeof(SceneReference), searchingPaths);
@@ -34,6 +32,32 @@ namespace SceneManagementExtensions.Editor
 				MethodInfo onValidate = scene.GetType().GetMethod("OnValidate", BindingFlags.NonPublic | BindingFlags.Instance);
 				onValidate.Invoke(scene, new object[] { });
 			}
+		}
+
+		#endregion
+
+		#region Open On Double Click
+
+		// When the user double clicks on the asset, open the scene.
+
+		[UnityEditor.Callbacks.OnOpenAsset]
+		private static bool OnDoubleClick(int instanceId, int line)
+		{
+			var obj = EditorUtility.InstanceIDToObject(instanceId);
+			if (obj is SceneReference)
+			{
+				var sceneReference = (SceneReference)obj;
+
+				if (string.IsNullOrEmpty(sceneReference.SceneName))
+					return false;
+
+				var scenePath = sceneReference.ScenePath;
+				SceneManagerExtensions.SaveAndLoadScene(scenePath);
+
+				return true;
+			}
+
+			return false;
 		}
 
 		#endregion
@@ -72,16 +96,16 @@ namespace SceneManagementExtensions.Editor
 		private void DrawLoadingButtons()
 		{
 			var scene = sceneReference.GetScene();
-			string scenePath = AssetDatabase.GetAssetPath(sceneAssetProperty.objectReferenceValue);
+			string scenePath = sceneReference.ScenePath;
 
 			EditorGUILayout.BeginHorizontal();
 
-			// LAOD SCENE
+			// LOAD SCENE
 			if (EditorSceneManager.sceneCount == 1 && scene.isLoaded)
 				GUI.enabled = false;
 			if (GUILayout.Button("Open", GUILayout.Width(100)))
 			{
-				EditorSceneFunctions.SaveAndLoadScene(scenePath);
+				SceneManagerExtensions.SaveAndLoadScene(scenePath);
 			}
 			GUI.enabled = true;
 
@@ -93,14 +117,14 @@ namespace SceneManagementExtensions.Editor
 			{
 				if (GUILayout.Button(EditorGUIUtility.IconContent("Toolbar Plus")))
 				{
-					EditorSceneFunctions.AddScene(scenePath);
+					SceneManagerExtensions.AddScene(scenePath);
 				}
 			}
 			else
 			{
 				if (GUILayout.Button(EditorGUIUtility.IconContent("Toolbar Minus")))
 				{
-					EditorSceneFunctions.SaveAndCloseScene(scene);
+					SceneManagerExtensions.SaveAndCloseScene(scene);
 				}
 			}
 			GUI.enabled = true;
@@ -112,7 +136,7 @@ namespace SceneManagementExtensions.Editor
 				GUI.enabled = false;
 			if (GUILayout.Button(EditorGUIUtility.IconContent("PlayButton On")))
 			{
-				if (EditorSceneFunctions.SaveAndLoadScene(scenePath))
+				if (SceneManagerExtensions.SaveAndLoadScene(scenePath))
 					EditorApplication.EnterPlaymode();
 			}
 			GUI.enabled = true;

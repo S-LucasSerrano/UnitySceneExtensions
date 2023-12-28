@@ -1,10 +1,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEditor;
-using UnityEditor.SceneManagement;
 
-namespace SceneManagementExtensions.Editor
+namespace UnityEditor.SceneManagement
 {
 	/// <summary>
 	/// Editor window displaying a list of all the scenes in the assets folder, and buttons to easly load them.
@@ -182,7 +180,7 @@ namespace SceneManagementExtensions.Editor
 
 				if (GUILayout.Button(buttonLabel, _loadButtonStyle))
 				{
-					EditorSceneFunctions.SaveAndLoadScene(scenePath);
+					SceneManagerExtensions.SaveAndLoadScene(scenePath);
 				}
 
 				GUI.color = defaultColor;
@@ -197,14 +195,14 @@ namespace SceneManagementExtensions.Editor
 				{
 					if (GUILayout.Button(EditorGUIUtility.IconContent("Toolbar Plus"), _addButtonStyle))
 					{
-						EditorSceneFunctions.AddScene(scenePath);
+						SceneManagerExtensions.AddScene(scenePath);
 					}
 				}
 				else
 				{
 					if (GUILayout.Button(EditorGUIUtility.IconContent("Toolbar Minus"), _addButtonStyle))
 					{
-						EditorSceneFunctions.SaveAndCloseScene(scene);
+						SceneManagerExtensions.SaveAndCloseScene(scene);
 					}
 				}
 
@@ -216,7 +214,7 @@ namespace SceneManagementExtensions.Editor
 					GUI.enabled = false;
 				if (GUILayout.Button(EditorGUIUtility.IconContent("PlayButton On"), _playButtonStyle))
 				{
-					if (EditorSceneFunctions.SaveAndLoadScene(scenePath))
+					if (SceneManagerExtensions.SaveAndLoadScene(scenePath))
 						EditorApplication.EnterPlaymode();
 				}
 				GUI.enabled = true;

@@ -1,10 +1,9 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEditor;
 
-namespace SceneManagementExtensions.Editor
+namespace UnityEditor.SceneManagement
 {
-	/// <summary> Scriptable object that saves data that the <see cref="SceneListWindow"/> needs to persist between sessions. </summary>
+	/// <summary> Scriptable singleton that saves the data that the <see cref="SceneListWindow"/> needs to persist between sessions. </summary>
 	
 	[FilePath("ProjectSettings/SceneLoaderWindow.asset", FilePathAttribute.Location.ProjectFolder)]
 	public class SceneListPreferences : ScriptableSingleton<SceneListPreferences>

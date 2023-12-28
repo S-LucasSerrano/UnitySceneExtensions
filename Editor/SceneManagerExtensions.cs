@@ -1,24 +1,23 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEditor.SceneManagement;
 
-namespace SceneManagementExtensions.Editor
+namespace UnityEditor.SceneManagement
 {
-	/// <summary> Functions to manage scenes in the editor. </summary>
-	public static class EditorSceneFunctions
+	/// <summary> Added functions to manage scenes in the editor. </summary>
+	public static class SceneManagerExtensions
 	{
 		/// <summary> Open the target scene, asking to save if there are changes. </summary>
 		/// <returns> True if the scene has been loaded. </returns>
-		public static bool SaveAndLoadScene(string scene)
+		public static bool SaveAndLoadScene(string scenePath)
 		{
 			if (Application.isPlaying)
 			{
-				SceneManager.LoadScene(scene);
+				SceneManager.LoadScene(scenePath);
 			}
 			else
 			{
 				if (EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
-					EditorSceneManager.OpenScene(scene);
+					EditorSceneManager.OpenScene(scenePath);
 				else
 					return false;
 			}
@@ -27,15 +26,15 @@ namespace SceneManagementExtensions.Editor
 		}
 
 		/// <summary> Open target scene without closing the rest. </summary>
-		public static void AddScene(string scene)
+		public static void AddScene(string scenePath)
 		{
 			if (Application.isPlaying)
 			{
-				SceneManager.LoadScene(scene, LoadSceneMode.Additive);
+				SceneManager.LoadScene(scenePath, LoadSceneMode.Additive);
 			}
 			else
 			{
-				EditorSceneManager.OpenScene(scene, OpenSceneMode.Additive);
+				EditorSceneManager.OpenScene(scenePath, OpenSceneMode.Additive);
 			}
 		}
 
