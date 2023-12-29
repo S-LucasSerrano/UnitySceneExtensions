@@ -5,6 +5,7 @@ This is the Unity package I use to manage scenes in my own games. It includes:
 - Scriptable objects that hold a reference to a scene, with functions that allow to load it from Buttons, Unity Events or from your code.
 - Fading between scenes and an easy way to create new transitions.
  - An easy way to create a loading screen.
+
 Check the package documentation to see all the things it can do for your project: *(the link will be here)*.
 ---
 ### Installation
