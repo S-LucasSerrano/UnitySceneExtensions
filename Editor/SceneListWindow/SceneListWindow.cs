@@ -11,10 +11,10 @@ namespace UnityEditor.SceneManagement
 	public class SceneListWindow : EditorWindow
 	{
 		/// <summary> Dictionary with all the scenes in the asset folder associated with their directory. </summary>
-		Dictionary<string, List<SceneData>> scenesByDir = new();
+		Dictionary<string, List<SceneData>> scenesByDir = new Dictionary<string, List<SceneData>>();
 
 		/// Current position of the window's scroll view.
-		Vector2 _scrollPosition = new();
+		Vector2 _scrollPosition = new Vector2();
 
 		/// Different GUI styles used in the window.
 		GUIStyle _loadButtonStyle = null;
@@ -53,7 +53,7 @@ namespace UnityEditor.SceneManagement
 
 			foreach (string guid in guids)
 			{
-				SceneData newSceneData = new(guid);
+				SceneData newSceneData = new SceneData(guid);
 
 				string dir = System.IO.Path.GetDirectoryName(newSceneData.path);
 				if (!scenesByDir.ContainsKey(dir))
