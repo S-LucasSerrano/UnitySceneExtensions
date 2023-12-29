@@ -55,12 +55,10 @@ namespace UnityEngine.SceneManagement
 
 		public void LoadScene(string targetScene)
 		{
-			_targetSceneName = targetScene;
+			_usingTransition = false;
+			_transitionEffect = null;
 
-			SceneManager.sceneLoaded -= OnSceneLoaded;
-			SceneManager.sceneLoaded += OnSceneLoaded;
-
-			SceneManager.LoadScene(LoadingSceneName);
+			LoadSceneAfterLoadingScreen(targetScene);
 		}
 
 		#endregion
@@ -92,15 +90,26 @@ namespace UnityEngine.SceneManagement
 			_transitionEffect = transitionEffect;
 
 			if (transitionEffect == null)
-				LoadScene(targetScene);
+				LoadSceneAfterLoadingScreen(targetScene);
 			else
-				transitionEffect.AnimateTransitionTo(true, ()=>LoadScene(targetScene));
+				transitionEffect.AnimateTransitionTo(true, ()=> LoadSceneAfterLoadingScreen(targetScene));
 		}
 
 		#endregion
 
 		// ----------
 		#region Loading Screen
+
+		/// <summary> Open the loading scene before loading the target scene. </summary>
+		private void LoadSceneAfterLoadingScreen(string targetScene)
+		{
+			_targetSceneName = targetScene;
+
+			SceneManager.sceneLoaded -= OnSceneLoaded;
+			SceneManager.sceneLoaded += OnSceneLoaded;
+
+			SceneManager.LoadScene(LoadingSceneName);
+		}
 
 		/// Function called when a scene is loaded.
 		private void OnSceneLoaded(Scene scene, LoadSceneMode loadMode)
@@ -130,6 +139,7 @@ namespace UnityEngine.SceneManagement
 					_transitionEffect.AnimateTransitionTo(false);
 			}
 
+			// Reset.
 			_targetSceneName = null;
 			_loadingProgress = 0;
 

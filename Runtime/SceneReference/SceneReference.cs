@@ -41,16 +41,21 @@ namespace UnityEngine.SceneManagement
 		/// <summary> Load the scene this object is referencing. </summary>
 		public void LoadScene()
 		{
-			this.LoadScene(LoadSceneMode.Single);
+			LoadScene(LoadSceneMode.Single);
 		}
 
 		public void LoadScene(LoadSceneMode mode)
 		{
+			_usingTransition = false;
+			_transitionEffect = null;
+
 			SceneManager.LoadScene(SceneName, mode);
 		}
 
 		public void LoadScene(LoadSceneParameters parameters)
 		{
+			_usingTransition = false;
+			_transitionEffect = null;
 			SceneManager.LoadScene(SceneName, parameters);
 		}
 
@@ -82,11 +87,11 @@ namespace UnityEngine.SceneManagement
 
 			if (transitionEffect == null)
 			{
-				LoadScene();
+				SceneManager.LoadScene(SceneName);
 			}
 			else
 			{ 
-				transitionEffect.AnimateTransitionTo(true, LoadScene);
+				transitionEffect.AnimateTransitionTo(true, ()=> SceneManager.LoadScene(SceneName));
 			}
 		}
 
@@ -126,22 +131,3 @@ namespace UnityEngine.SceneManagement
 		#endregion
 	}
 }
-
-/*
- TO DO:
-	
-	LOAD SCENE AUTOMATICALLY
-		Componente LoadSceneAutomatically para cargar escenas en el start.		
-		Quiza hacerle un custom inspector para indicar: usar scene reference o nombre (mirar si es facil hacerlo por indice tambien)
-		Indicar si es usando una pantalla de carga
-		Y si es usando una transicion -> con una enum que sea: sin transicion, indicar transicion, encontrar transicion automaticamente.
-		
-
-	(Usar [AddComponentMenu] en todos lados)
-
-	Buscar icono para scene fader
-	Buscar o hacer mejor el icono del loading screen
-
-	Preparar las Samples
-	Documentacion
- */
