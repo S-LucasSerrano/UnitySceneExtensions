@@ -7,6 +7,7 @@ This is the Unity package I use to manage scenes in my own games. It includes:
  - An easy way to create a loading screen.
 
 Check the package documentation to see all the things it can do for your project: *(the link will be here)*.
+
 ---
 ### Installation
 How to add the package to your project: if you have git installed on your computer, from Untiy go to Window -> Package Manager -> + (top left) -> Add from Git Url and paste the URL of the git repo.
