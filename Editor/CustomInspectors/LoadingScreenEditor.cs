@@ -1,3 +1,4 @@
+using System.Reflection;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -9,6 +10,34 @@ namespace UnityEditor.SceneManagement
 	public class LoadingScreenEditor : Editor
 	{
 		// -----------------------------------------------------------------
+		// -----------------------------------------------------------------
+		#region Validation
+
+		// When something changes in the project, validate all loading screens.
+
+		[InitializeOnLoadMethod]
+		private static void AddListeners()
+		{
+			EditorApplication.projectChanged += OnProjectChanged;
+		}
+
+		private static void OnProjectChanged()
+		{
+			string[] searchingPaths = { "Assets" };
+			string[] guids = AssetDatabase.FindAssets("t:" + typeof(LoadingScreen), searchingPaths);
+
+			foreach (string guid in guids)
+			{
+				string path = AssetDatabase.GUIDToAssetPath(guid);
+				LoadingScreen scene = AssetDatabase.LoadAssetAtPath<LoadingScreen>(path);
+
+				MethodInfo onValidate = scene.GetType().GetMethod("OnValidate", BindingFlags.NonPublic | BindingFlags.Instance);
+				onValidate.Invoke(scene, new object[] { });
+			}
+		}
+
+		#endregion
+
 		#region Open On Double Click
 
 		// When the user double clicks on the asset, open the scene.

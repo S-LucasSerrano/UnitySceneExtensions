@@ -11,20 +11,28 @@ namespace UnityEngine.SceneManagement
 
 		/// <summary> True while animating the effect. </summary>
 		public bool Animating => _animating;
-		bool _animating = false;
+		protected bool _animating = false;
 		/// <summary> Currently active transition corroutine. </summary>	
-		Coroutine _transitionRoutine = null;
+		protected Coroutine _transitionRoutine = null;
+
+
+		// -----------------------------------------------------------------
+
+		protected virtual void Start()
+		{
+			SetTo(false);
+		}
 
 
 		// -----------------------------------------------------------------
 
 		/// <summary> Play this transition effect. </summary>
 		/// <param name="targetValue"> If true the effect appears, if false the effect disappears. </param>
-		public void AnimateTransitionTo(bool targetValue) => AnimateTransitionTo(targetValue, null);
+		public virtual void AnimateTransitionTo(bool targetValue) => AnimateTransitionTo(targetValue, null);
 
 		/// <summary> Play this transition effect. </summary>
 		/// <param name="onCompleted"> Callback invoked when the animation is completed. </param>
-		public void AnimateTransitionTo(bool targetValue, UnityAction onCompleted)
+		public virtual void AnimateTransitionTo(bool targetValue, UnityAction onCompleted)
 		{
 			if (this.gameObject.activeInHierarchy == false)
 			{
@@ -37,8 +45,8 @@ namespace UnityEngine.SceneManagement
 			_transitionRoutine = StartCoroutine(TransitionRoutine(targetValue, onCompleted));
 		}
 
-		/// Corroutine that animates the transition value.
-		private IEnumerator TransitionRoutine(bool value, UnityAction onCompleted)
+		/// <summary> Corroutine that animates the transition value. </summary>
+		protected IEnumerator TransitionRoutine(bool value, UnityAction onCompleted)
 		{
 			float start = value == true ? 0 : 1;
 			float end = value == true ? 1 : 0;
@@ -65,7 +73,7 @@ namespace UnityEngine.SceneManagement
 
 		/// <summary> Set the transition effect without animation. </summary>
 		/// <param name="targetValue"> If true the effect appears, if false the effect disappears. </param>
-		public void SetTo(bool targetValue)
+		public virtual void SetTo(bool targetValue)
 		{
 			if (_transitionRoutine != null) { StopCoroutine(_transitionRoutine); }
 

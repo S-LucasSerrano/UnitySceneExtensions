@@ -16,8 +16,8 @@ namespace UnityEngine.SceneManagement
 
 		private void OnValidate()
 		{
-			LoadingSceneName = loadingSceneAsset != null ? loadingSceneAsset.name : "";
-			LoadingScenePath = UnityEditor.AssetDatabase.GetAssetPath(loadingSceneAsset);
+			_loadingSceneName = loadingSceneAsset != null ? loadingSceneAsset.name : "";
+			_loadingScenePath = UnityEditor.AssetDatabase.GetAssetPath(loadingSceneAsset);
 		}
 
 #endif
@@ -27,9 +27,12 @@ namespace UnityEngine.SceneManagement
 		// ----------
 
 		/// <summary> Name of the scene used as loading screen. </summary>
-		[SerializeField, HideInInspector] public string LoadingSceneName = "";
+		public string LoadingSceneName => _loadingSceneName;
+		[SerializeField, HideInInspector] private string _loadingSceneName = "";
 		/// <summary> Path of the scene used as loading screen relative to the project folder. </summary>
-		[SerializeField, HideInInspector] public string LoadingScenePath = "";
+		public string LoadingScenePath => _loadingScenePath;
+		[SerializeField, HideInInspector] public string _loadingScenePath = "";
+
 		/// <summary> The minimum time the loading screen is shown, even if the loading process takes less. </summary>
 		[SerializeField][Min(0)] public float MinLoadingTime = 0;
 

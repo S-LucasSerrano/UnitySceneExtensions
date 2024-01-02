@@ -15,8 +15,8 @@ namespace UnityEngine.SceneManagement
 
 		private void OnValidate()
 		{
-			SceneName = sceneAsset != null ? sceneAsset.name : "";
-			ScenePath = UnityEditor.AssetDatabase.GetAssetPath(sceneAsset);
+			_sceneName = sceneAsset != null ? sceneAsset.name : "";
+			_scenePath = UnityEditor.AssetDatabase.GetAssetPath(sceneAsset);
 		}
 
 #endif
@@ -26,9 +26,11 @@ namespace UnityEngine.SceneManagement
 		// ----------
 
 		/// <summary> Name of the scene referenced by this object. </summary>
-		[SerializeField, HideInInspector] public string SceneName = "";
+		public string SceneName => _sceneName;
+		[SerializeField, HideInInspector] public string _sceneName = "";
 		/// <summary> Path of the scene referenced by this object relative to the project folder. </summary>
-		[SerializeField, HideInInspector] public string ScenePath = "";
+		public string ScenePath => _scenePath;
+		[SerializeField, HideInInspector] public string _scenePath = "";
 
 		/// If we are using or not a transition effect to change between scenes.
 		private bool _usingTransition = false;
@@ -64,7 +66,7 @@ namespace UnityEngine.SceneManagement
 		// ----------
 		#region Transition To Scene
 
-		/// <summary> Load a scene after playing a transition effect found in the scene. </summary>
+		/// <summary> Load this scene after playing a transition effect found in the scene. </summary>
 		public void TransitionToScene()
 		{
 			SceneTransitionEffect transitionEffect = FindObjectOfType<SceneTransitionEffect>(false);
@@ -76,7 +78,7 @@ namespace UnityEngine.SceneManagement
 			TransitionToScene(transitionEffect);
 		}
 
-		/// <summary> Load a scene after playing a transition efffect. </summary>
+		/// <summary> Load this scene after playing a transition efffect. </summary>
 		public void TransitionToScene(SceneTransitionEffect transitionEffect)
 		{
 			_usingTransition = true;
