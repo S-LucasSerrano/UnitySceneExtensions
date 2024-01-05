@@ -16,11 +16,6 @@ namespace UnityEditor.SceneManagement
 		/// Current position of the window's scroll view.
 		Vector2 _scrollPosition = new Vector2();
 
-		/// Different GUI styles used in the window.
-		GUIStyle _loadButtonStyle = null;
-		GUIStyle _addButtonStyle = null;
-		GUIStyle _playButtonStyle = null;
-
 		/// <summary> Direct acces to the preferences scriptable singleton. </summary>
 		SceneListPreferences Preferences => SceneListPreferences.instance;
 
@@ -73,8 +68,6 @@ namespace UnityEditor.SceneManagement
 
 		private void OnGUI()
 		{
-			UpdateGUIStyles();
-
 			_scrollPosition = EditorGUILayout.BeginScrollView(_scrollPosition);
 
 			foreach (string dir in scenesByDir.Keys)
@@ -95,46 +88,20 @@ namespace UnityEditor.SceneManagement
 			EditorGUILayout.EndScrollView();
 		}
 
-		/// <summary> Make sure the different GUI styles draw everything as it is supposed to. </summary>
-		private void UpdateGUIStyles()
-		{
-			if (_loadButtonStyle == null)
-				_loadButtonStyle = new GUIStyle(GUI.skin.button)
-				{
-					alignment = TextAnchor.MiddleLeft,
-					fontStyle = FontStyle.Italic
-				};
-
-			if (_addButtonStyle == null)
-				_addButtonStyle = new GUIStyle(GUI.skin.button)
-				{
-					fixedWidth = 30
-				};
-
-			if (_playButtonStyle == null)
-				_playButtonStyle = new GUIStyle(GUI.skin.button)
-				{
-					fixedWidth = 50
-				};
-
-			_loadButtonStyle.fixedWidth = Screen.width - (80 + _playButtonStyle.margin.horizontal * 2);
-		}
-
 		private void DrawDirectoryHeader(string dir)
 		{
 			// Draw a divider.
 			EditorGUILayout.BeginHorizontal();
 			{
-				GUILayout.FlexibleSpace();
-				EditorGUILayout.LabelField("---", GUI.skin.horizontalSlider, GUILayout.Width(Screen.width - 60));
-				GUILayout.FlexibleSpace();
+				GUILayout.Space(70);
+				EditorGUILayout.LabelField("---", SeparatorStyle);
 			}
 			EditorGUILayout.EndHorizontal();
 
 			EditorGUILayout.BeginHorizontal();
 			{
 				// Draw a button to show the directoty in the project window.
-				if (GUILayout.Button(EditorGUIUtility.IconContent("FolderOpened On Icon"), _addButtonStyle, GUILayout.Height(20)))
+				if (GUILayout.Button(FolderIcon, FolderButtonStyle))
 				{
 					var dirObj = AssetDatabase.LoadAssetAtPath(dir, typeof(UnityEngine.Object));
 					EditorGUIUtility.PingObject(dirObj);
@@ -144,11 +111,13 @@ namespace UnityEditor.SceneManagement
 				// Draw a button to fold the directory.
 				string label = dir.Substring("Assets/".Length);
 				bool isOpen = Preferences.IsDirOpen(dir);
+				bool wasOpen = isOpen;
 
 				isOpen = EditorGUILayout.BeginFoldoutHeaderGroup(isOpen, label);
 				EditorGUILayout.EndFoldoutHeaderGroup();
 
-				Preferences.SetDirFolded(dir, isOpen);
+				if (isOpen != wasOpen)
+					Preferences.SetDirFolded(dir, isOpen);
 			}
 			EditorGUILayout.EndHorizontal();
 
@@ -178,7 +147,7 @@ namespace UnityEditor.SceneManagement
 				if (scene.isLoaded && SceneManager.sceneCount == 1)
 					GUI.enabled = false;
 
-				if (GUILayout.Button(buttonLabel, _loadButtonStyle))
+				if (GUILayout.Button(buttonLabel, LoadButtonStyle))
 				{
 					SceneManagerExtensions.SaveAndLoadScene(scenePath);
 				}
@@ -193,14 +162,14 @@ namespace UnityEditor.SceneManagement
 
 				if (!scene.isLoaded)
 				{
-					if (GUILayout.Button(EditorGUIUtility.IconContent("Toolbar Plus"), _addButtonStyle))
+					if (GUILayout.Button(PlusIcon, AddButtonStyle))
 					{
 						SceneManagerExtensions.AddScene(scenePath);
 					}
 				}
 				else
 				{
-					if (GUILayout.Button(EditorGUIUtility.IconContent("Toolbar Minus"), _addButtonStyle))
+					if (GUILayout.Button(MinusIcon, AddButtonStyle))
 					{
 						SceneManagerExtensions.SaveAndCloseScene(scene);
 					}
@@ -212,7 +181,7 @@ namespace UnityEditor.SceneManagement
 				// PLAY BUTTON.
 				if (Application.isPlaying)
 					GUI.enabled = false;
-				if (GUILayout.Button(EditorGUIUtility.IconContent("PlayButton On"), _playButtonStyle))
+				if (GUILayout.Button(PlayIcon, PlayButtonStyle))
 				{
 					if (SceneManagerExtensions.SaveAndLoadScene(scenePath))
 						EditorApplication.EnterPlaymode();
@@ -221,6 +190,133 @@ namespace UnityEditor.SceneManagement
 			}
 			GUILayout.EndHorizontal();
 			EditorGUILayout.Space();
+		}
+
+		#endregion
+
+		#region Styles & Icons
+
+		// ---
+		GUIStyle _loadButtonStyle = null;
+		GUIStyle LoadButtonStyle
+		{
+			get
+			{
+				if (_loadButtonStyle == null)
+				{
+					_loadButtonStyle = new GUIStyle(GUI.skin.button);
+					_loadButtonStyle.alignment = TextAnchor.MiddleLeft;
+					_loadButtonStyle.fontStyle = FontStyle.Italic;
+				}
+
+				_loadButtonStyle.fixedWidth = Screen.width - (80 + PlayButtonStyle.margin.horizontal * 2);
+				return _loadButtonStyle;
+			}
+		}
+
+		// ---
+		GUIStyle _addButtonStyle = null;
+		GUIStyle AddButtonStyle
+		{
+			get
+			{
+				if (_addButtonStyle == null)
+				{
+					_addButtonStyle = new GUIStyle(GUI.skin.button);
+					_addButtonStyle.fixedWidth = 30;
+				}
+
+				return _addButtonStyle;
+			}
+		}
+
+		GUIContent _plusIcon = null;
+		GUIContent PlusIcon
+		{
+			get
+			{
+				if (_plusIcon == null)
+					_plusIcon = EditorGUIUtility.IconContent("Toolbar Plus");
+				return _plusIcon;
+			}
+		}
+
+		GUIContent _minusIcon = null;
+		GUIContent MinusIcon
+		{
+			get
+			{
+				if (_minusIcon == null)
+					_minusIcon = EditorGUIUtility.IconContent("Toolbar Minus");
+				return _minusIcon;
+			}
+		}
+
+		// ---
+		GUIStyle _playButtonStyle = null;
+		GUIStyle PlayButtonStyle
+		{
+			get
+			{
+				if (_playButtonStyle == null)
+				{
+					_playButtonStyle = new GUIStyle(GUI.skin.button);
+					_playButtonStyle.fixedWidth = 50;
+				}
+				return _playButtonStyle;
+			}
+		}
+
+		GUIContent _playIcon = null;
+		GUIContent PlayIcon
+		{
+			get
+			{
+				if (_playIcon == null)
+					_playIcon = EditorGUIUtility.IconContent("PlayButton On");
+				return _playIcon;
+			}
+		}
+
+		// ---
+		GUIStyle _folderButtonStyle = null;
+		GUIStyle FolderButtonStyle
+		{
+			get
+			{
+				if (_folderButtonStyle == null)
+				{
+					_folderButtonStyle = new GUIStyle(AddButtonStyle);
+					_folderButtonStyle.fixedHeight = 20;
+				}
+				return _folderButtonStyle;
+			}
+		}
+
+		GUIContent _folderIcon = null;
+		GUIContent FolderIcon
+		{
+			get
+			{
+				if (_folderIcon == null)
+					_folderIcon = EditorGUIUtility.IconContent("FolderOpened On Icon");
+				return _folderIcon;
+			}
+		}
+
+		// ---
+		GUIStyle _separatorStyle = null;
+		GUIStyle SeparatorStyle
+		{
+			get
+			{
+				if (_separatorStyle == null)
+				{
+					_separatorStyle = new GUIStyle(GUI.skin.horizontalSlider);
+				}
+				_separatorStyle.fixedWidth = Screen.width - 80;
+				return _separatorStyle;
+			}
 		}
 
 		#endregion
