@@ -12,7 +12,7 @@
 
 # Meta of the Git files
 LICENSE.meta
-README.mb.meta
+README.md.meta
 package.json.meta
 
 
