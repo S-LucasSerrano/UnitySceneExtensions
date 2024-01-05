@@ -1,7 +1,7 @@
 {
 	"name": "lucasserrano.scene-extensions",
 	"displayName": "Scene Management Extensions",
-	"version":"1.0.0",
+	"version":"1.0.1",
 	"description": "Package that adds scene management functionality.",
 	"author": {
 		"name" : "S. Lucas Serrano",
