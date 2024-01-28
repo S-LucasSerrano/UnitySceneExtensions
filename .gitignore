@@ -10,12 +10,6 @@
 /[Ll]ogs/
 /[Uu]ser[Ss]ettings/
 
-# Meta of the Git files
-LICENSE.meta
-README.md.meta
-package.json.meta
-
-
 # MemoryCaptures can get excessive in size.
 # They also could contain extremely sensitive data
 /[Mm]emoryCaptures/
