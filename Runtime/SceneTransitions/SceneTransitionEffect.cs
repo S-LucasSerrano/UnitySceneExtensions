@@ -21,7 +21,12 @@ namespace LucasSerrano.SceneManagement
 
 		protected virtual void Start()
 		{
-			SetTo(false);
+			// Start with the animation to false.
+			// But avoid canceling the animation if it has already started.
+			if (_animating == false)	
+			{
+				SetTo(false);
+			}
 		}
 
 
