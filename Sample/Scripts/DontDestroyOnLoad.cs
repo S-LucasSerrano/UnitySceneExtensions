@@ -1,8 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-namespace SceneExtensions.Sample
+namespace LucasSerrano.SceneManagement.Sample
 {
     public class DontDestroyOnLoad : MonoBehaviour
     {

@@ -1,6 +1,7 @@
 using UnityEngine.UI;
+using UnityEngine;
 
-namespace UnityEngine.SceneManagement
+namespace LucasSerrano.SceneManagement
 {
 	/// <summary> Component that modifies the fill amount of a UI image to show the progress of a loading screen. </summary>
 

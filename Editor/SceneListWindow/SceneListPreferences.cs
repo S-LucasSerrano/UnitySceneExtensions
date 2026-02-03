@@ -1,7 +1,8 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor;
 
-namespace UnityEditor.SceneManagement
+namespace LucasSerrano.SceneManagement.Editor
 {
 	/// <summary> Scriptable singleton that saves the data that the <see cref="SceneListWindow"/> needs to persist between sessions. </summary>
 	

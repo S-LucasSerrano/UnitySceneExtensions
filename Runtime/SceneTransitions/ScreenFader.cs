@@ -1,6 +1,7 @@
+using UnityEngine;
 using UnityEngine.UI;
 
-namespace UnityEngine.SceneManagement
+namespace LucasSerrano.SceneManagement
 {
 	/// <summary> Scene transition effect that fades the alpha of an UI image. </summary>
 	

@@ -1,5 +1,7 @@
+using UnityEngine;
+using UnityEngine.SceneManagement;
 
-namespace UnityEngine.SceneManagement
+namespace LucasSerrano.SceneManagement
 {
 	/// <summary> Scriptable object that allows loading a specific scene. </summary>
 

@@ -1,7 +1,8 @@
 using System.Collections;
 using UnityEngine.Events;
+using UnityEngine;
 
-namespace UnityEngine.SceneManagement
+namespace LucasSerrano.SceneManagement
 {
 	/// <summary> Component that animates an effect meant to decorate the change between scenes. </summary>
 	public abstract class SceneTransitionEffect : MonoBehaviour

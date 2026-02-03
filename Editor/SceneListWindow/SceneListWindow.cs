@@ -1,8 +1,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEditor;
+using UnityEditor.SceneManagement;
 
-namespace UnityEditor.SceneManagement
+namespace LucasSerrano.SceneManagement.Editor
 {
 	/// <summary>
 	/// Editor window displaying a list of all the scenes in the assets folder, and buttons to easly load them.

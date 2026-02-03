@@ -1,13 +1,14 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEditor;
 
-namespace UnityEditor.SceneManagement
+namespace LucasSerrano.SceneManagement.Editor
 {
 	/// <summary> Custom inspector for the <see cref="LoadSceneAutomatically"/> component. </summary>
 
     [CustomEditor(typeof(LoadSceneAutomatically))]
 	[CanEditMultipleObjects]
-    public class LoadSceneAutomaticallyEditor : Editor
+    public class LoadSceneAutomaticallyEditor : UnityEditor.Editor
     {
 		private LoadSceneAutomatically component = null;
 

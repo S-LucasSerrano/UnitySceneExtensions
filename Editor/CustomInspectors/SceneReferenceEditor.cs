@@ -1,12 +1,14 @@
 using System.Reflection;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEditor;
+using UnityEditor.SceneManagement;
 
-namespace UnityEditor.SceneManagement
+namespace LucasSerrano.SceneManagement.Editor
 {
 	/// <summary> Custom inspector for the <see cref="SceneReference"/> class. </summary>
 	[CustomEditor(typeof(SceneReference))]
-	public class SceneReferenceEditor : Editor 
+	public class SceneReferenceEditor : UnityEditor.Editor 
 	{
 		// -----------------------------------------------------------------
 		#region Validation

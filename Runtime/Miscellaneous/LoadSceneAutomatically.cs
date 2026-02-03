@@ -1,6 +1,7 @@
 using System.Collections;
+using UnityEngine;
 
-namespace UnityEngine.SceneManagement
+namespace LucasSerrano.SceneManagement
 {
 	/// <summary> Component that loads a scene on start. </summary>
 

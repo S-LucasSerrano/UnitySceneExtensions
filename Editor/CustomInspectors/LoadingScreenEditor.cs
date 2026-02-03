@@ -1,13 +1,14 @@
 using System.Reflection;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEditor;
 
-namespace UnityEditor.SceneManagement
+namespace LucasSerrano.SceneManagement.Editor
 {
 	/// <summary> Custom inspector for the <see cref="LoadingScreen"/> class. </summary>
 	[CustomEditor(typeof(LoadingScreen))]
 	[CanEditMultipleObjects]
-	public class LoadingScreenEditor : Editor
+	public class LoadingScreenEditor : UnityEditor.Editor
 	{
 		// -----------------------------------------------------------------
 		// -----------------------------------------------------------------
