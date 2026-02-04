@@ -199,7 +199,7 @@ namespace LucasSerrano.SceneManagement.Editor
 		#region Styles & Icons
 
 		// ---
-		GUIStyle _loadButtonStyle = null;
+		static GUIStyle _loadButtonStyle = null;
 		GUIStyle LoadButtonStyle
 		{
 			get
@@ -217,7 +217,7 @@ namespace LucasSerrano.SceneManagement.Editor
 		}
 
 		// ---
-		GUIStyle _addButtonStyle = null;
+		static GUIStyle _addButtonStyle = null;
 		GUIStyle AddButtonStyle
 		{
 			get
@@ -232,7 +232,7 @@ namespace LucasSerrano.SceneManagement.Editor
 			}
 		}
 
-		GUIContent _plusIcon = null;
+		static GUIContent _plusIcon = null;
 		GUIContent PlusIcon
 		{
 			get
@@ -243,7 +243,7 @@ namespace LucasSerrano.SceneManagement.Editor
 			}
 		}
 
-		GUIContent _minusIcon = null;
+		static GUIContent _minusIcon = null;
 		GUIContent MinusIcon
 		{
 			get
@@ -255,7 +255,7 @@ namespace LucasSerrano.SceneManagement.Editor
 		}
 
 		// ---
-		GUIStyle _playButtonStyle = null;
+		static GUIStyle _playButtonStyle = null;
 		GUIStyle PlayButtonStyle
 		{
 			get
@@ -269,19 +269,19 @@ namespace LucasSerrano.SceneManagement.Editor
 			}
 		}
 
-		GUIContent _playIcon = null;
+		static GUIContent _playIcon = null;
 		GUIContent PlayIcon
 		{
 			get
 			{
 				if (_playIcon == null)
-					_playIcon = EditorGUIUtility.IconContent("PlayButton On");
+					_playIcon = EditorGUIUtility.IconContent("PlayButton");
 				return _playIcon;
 			}
 		}
 
 		// ---
-		GUIStyle _folderButtonStyle = null;
+		static GUIStyle _folderButtonStyle = null;
 		GUIStyle FolderButtonStyle
 		{
 			get
@@ -295,7 +295,7 @@ namespace LucasSerrano.SceneManagement.Editor
 			}
 		}
 
-		GUIContent _folderIcon = null;
+		static GUIContent _folderIcon = null;
 		GUIContent FolderIcon
 		{
 			get
@@ -307,7 +307,7 @@ namespace LucasSerrano.SceneManagement.Editor
 		}
 
 		// ---
-		GUIStyle _separatorStyle = null;
+		static GUIStyle _separatorStyle = null;
 		GUIStyle SeparatorStyle
 		{
 			get
@@ -325,7 +325,7 @@ namespace LucasSerrano.SceneManagement.Editor
 
 
 		// -----------------------------------------------------------------
-		#region Difinitions
+		#region Definitions
 
 		/// <summary> Data from a scene in the project. </summary>
 		private class SceneData
@@ -339,16 +339,7 @@ namespace LucasSerrano.SceneManagement.Editor
 				this.guid = guid;
 
 				path = AssetDatabase.GUIDToAssetPath(guid);
-				name = ExtractFileNameFromPath(path);
-			}
-
-			private string ExtractFileNameFromPath(string path)
-			{
-				string[] strs = path.Split('/');
-				string fileName = strs[strs.Length - 1];
-				string extension = ".unity";
-				fileName = fileName.Substring(0, fileName.Length - extension.Length);
-				return fileName;
+				name = System.IO.Path.GetFileNameWithoutExtension(path);
 			}
 		}
 
