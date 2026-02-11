@@ -46,7 +46,7 @@ namespace LucasSerrano.SceneManagement.Editor
 		[UnityEditor.Callbacks.OnOpenAsset]
 		private static bool OnDoubleClick(int instanceId, int line)
 		{
-			var obj = EditorUtility.InstanceIDToObject(instanceId);
+			var obj = EditorUtility.EntityIdToObject(instanceId);
 			if (obj is LoadingScreen)
 			{
 				var loadingScreen = (LoadingScreen)obj;
