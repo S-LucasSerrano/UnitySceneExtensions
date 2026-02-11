@@ -14,21 +14,21 @@ namespace LucasSerrano.SceneManagement.Editor
 		[SerializeField]
 		List<bool> foldedValues = new List<bool>();
 
-		public bool IsDirOpen (string dir)
+		public bool GetDirectory (string dir)
 		{
-			int i = GetIndexOfDir(dir);
+			int i = GetIndexOf(dir);
 			return foldedValues[i];
 		}
 
-		public void SetDirFolded (string dir, bool value)
+		public void SetDirectory(string dir, bool value)
 		{
-			int i = GetIndexOfDir(dir);
+			int i = GetIndexOf(dir);
 			foldedValues[i] = value;
 
 			Save(true);
 		}
 
-		private int GetIndexOfDir(string dir)
+		private int GetIndexOf(string dir)
 		{
 			if (!directories.Contains(dir))
 				directories.Add(dir);

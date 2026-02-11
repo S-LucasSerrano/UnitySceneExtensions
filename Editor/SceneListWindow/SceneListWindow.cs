@@ -12,8 +12,8 @@ namespace LucasSerrano.SceneManagement.Editor
 
 	public class SceneListWindow : EditorWindow
 	{
-		/// <summary> Dictionary with all the scenes in the asset folder associated with their directory. </summary>
-		Dictionary<string, List<SceneData>> scenesByDir = new Dictionary<string, List<SceneData>>();
+		/// <summary> Folder hierarchy with all the scenes in the project. </summary>
+		Folder sceneFolderTree = null;
 
 		/// Current position of the window's scroll view.
 		Vector2 _scrollPosition = new Vector2();
@@ -26,7 +26,7 @@ namespace LucasSerrano.SceneManagement.Editor
 		#region Initialization
 
 		/// <summary> Open the Scene List window. </summary>
-		[MenuItem("Window/Scenes", priority = 5000)]
+		[MenuItem("Window/Scene List", priority = 5000)]
 		public static void Open()
 		{
 			var window = EditorWindow.GetWindow(typeof(SceneListWindow), false);
@@ -40,26 +40,70 @@ namespace LucasSerrano.SceneManagement.Editor
 			FindScenes();
 		}
 
-		/// <summary> Fill the scenes dictorionary with all the scenes in the assets folder. </summary>
+		/// <summary> Fill the scene tree with all the scenes in the assets folder. </summary>
 		private void FindScenes()
 		{
-			scenesByDir.Clear();
+			sceneFolderTree = new Folder() { name = "Assets", path="Assets" };
 
 			string[] searchingPaths = { "Assets" };
-			string[] guids = AssetDatabase.FindAssets("t:Scene", searchingPaths);
-
-			foreach (string guid in guids)
+			string[] sceneGuids = AssetDatabase.FindAssets("t:Scene", searchingPaths);
+			foreach (string guid in sceneGuids)
 			{
-				SceneData newSceneData = new SceneData(guid);
-
-				string dir = System.IO.Path.GetDirectoryName(newSceneData.path);
-				if (!scenesByDir.ContainsKey(dir))
-					scenesByDir.Add(dir, new List<SceneData>());
-
-				scenesByDir[dir].Add(newSceneData);
+				SceneData sceneData = new SceneData(guid);
+				AddScene(sceneData);
 			}
 
+			FlattenFolderTree(sceneFolderTree);
+
 			Repaint();
+		}
+
+		/// <summary> Add target scene to the folder tree. </summary>
+		private void AddScene(SceneData scene)
+		{
+			string scenePath = System.IO.Path.GetDirectoryName(scene.path);
+			string[] folderNames = scenePath.Split(System.IO.Path.DirectorySeparatorChar);
+
+			// Go deeper into the tree, adding each folder in the scene path.
+			Folder currentFolder = sceneFolderTree;
+			for (int i = 1; i < folderNames.Length; i++)
+			{
+				var folderName = folderNames[i];
+
+				if (currentFolder.ContainsChild(folderName) == false)
+				{
+					var newFolder = new Folder();
+					newFolder.name = folderName;
+					newFolder.path = currentFolder.path + "/" + newFolder.name;
+
+					currentFolder.childFolders.Add(newFolder);
+				}
+				currentFolder = currentFolder.GetChild(folderName);
+			}
+			// Add the scene to the last folder.
+			if (currentFolder.scenes.Contains(scene) == false)
+			{
+				currentFolder.scenes.Add(scene);
+			}
+		}
+
+		/// <summary> Ensure that there are no folders that only contain another single folder. </summary>
+		private void FlattenFolderTree(Folder parentFolder)
+		{
+			foreach(var folder in parentFolder.childFolders)
+			{
+				FlattenFolderTree(folder);
+
+				if (folder.childFolders.Count == 1 && folder.scenes.Count == 0)
+				{
+					var onlyChild = folder.childFolders[0];
+
+					folder.name = folder.name + "/" + onlyChild.name;
+					folder.path = onlyChild.path;
+					folder.scenes = onlyChild.scenes;
+					folder.childFolders = onlyChild.childFolders;
+				}
+			}
 		}
 
 		#endregion
@@ -71,62 +115,74 @@ namespace LucasSerrano.SceneManagement.Editor
 		private void OnGUI()
 		{
 			_scrollPosition = EditorGUILayout.BeginScrollView(_scrollPosition);
-
-			foreach (string dir in scenesByDir.Keys)
 			{
-				List<SceneData> scenes = scenesByDir[dir];
-
-				DrawDirectoryHeader(dir);
-
-				if (Preferences.IsDirOpen(dir))
-				{
-					foreach (SceneData scene in scenes)
-					{
-						DrawButtonsForScene(scene);
-					}
-				}
+				DrawHorizontalLine();
+				DrawFolderTree(sceneFolderTree);
 			}
-
 			EditorGUILayout.EndScrollView();
 		}
 
-		private void DrawDirectoryHeader(string dir)
+		private void DrawFolderTree(Folder folder, int indentLevel = 0)
 		{
-			// Draw a divider.
-			EditorGUILayout.BeginHorizontal();
-			{
-				GUILayout.Space(70);
-				EditorGUILayout.LabelField("---", SeparatorStyle);
-			}
-			EditorGUILayout.EndHorizontal();
+			if (Preferences.GetDirectory(folder.path) == false)
+				return;
 
+			float indentPixels = indentLevel * 40;
+
+			// Draw child folders.
+			foreach (Folder childFolder in folder.childFolders)
+			{
+				// Draw folder name.
+				DrawFolderHeader(childFolder, indentPixels);
+				// Draw the contents of the folder recursively.
+				DrawFolderTree(childFolder, indentLevel + 1);
+
+				DrawHorizontalLine(indentPixels);
+			}
+
+			// Draw buttons for each scene.
+			foreach (SceneData sceneData in folder.scenes)
+			{
+				DrawButtonsForScene(sceneData, indentPixels);
+			}
+		}
+
+		private void DrawFolderHeader(Folder folder, float indent = 0)
+		{
 			EditorGUILayout.BeginHorizontal();
 			{
+				GUILayout.Space(indent);
+
 				// Draw a button to show the directoty in the project window.
 				if (GUILayout.Button(FolderIcon, FolderButtonStyle))
 				{
-					var dirObj = AssetDatabase.LoadAssetAtPath(dir, typeof(UnityEngine.Object));
+					var dirObj = AssetDatabase.LoadAssetAtPath(folder.path, typeof(UnityEngine.Object));
 					EditorGUIUtility.PingObject(dirObj);
 					Selection.activeObject = dirObj;
 				}
 
 				// Draw a button to fold the directory.
-				string label = dir.Substring("Assets/".Length);
-				bool isOpen = Preferences.IsDirOpen(dir);
-				bool wasOpen = isOpen;
-
-				isOpen = EditorGUILayout.BeginFoldoutHeaderGroup(isOpen, label);
-				EditorGUILayout.EndFoldoutHeaderGroup();
-
+				bool wasOpen = Preferences.GetDirectory(folder.path);
+				bool isOpen = EditorGUILayout.Foldout(wasOpen, folder.name);
 				if (isOpen != wasOpen)
-					Preferences.SetDirFolded(dir, isOpen);
+				{
+					Preferences.SetDirectory(folder.path, isOpen);
+				}
 			}
 			EditorGUILayout.EndHorizontal();
-
-			EditorGUILayout.Space();
 		}
 
-		private void DrawButtonsForScene(SceneData sceneData)
+		private void DrawHorizontalLine(float indent = 0)
+		{
+			EditorGUILayout.BeginHorizontal();
+			{
+				GUILayout.Space(indent);
+				EditorGUILayout.LabelField("---", SeparatorStyle);
+			}
+			EditorGUILayout.EndHorizontal();
+		}
+
+		private void DrawButtonsForScene(SceneData sceneData, float indent = 0)
 		{
 			string scenePath = sceneData.path;
 			string sceneName = sceneData.name;
@@ -141,14 +197,24 @@ namespace LucasSerrano.SceneManagement.Editor
 				GUI.color = Color.yellow;
 
 			// NAME OF THE SCENE
-			GUILayout.Label("     " + sceneName, EditorStyles.whiteLargeLabel);
-
 			GUILayout.BeginHorizontal();
 			{
+				GUILayout.Space(indent);
+				GUILayout.Label("     " + sceneName, EditorStyles.whiteLargeLabel);
+			}
+			GUILayout.EndHorizontal();
+
+			// BUTTONS
+			GUILayout.BeginHorizontal();
+			{
+				GUILayout.Space(indent);
+
 				// LOAD BUTTON
 				if (scene.isLoaded && SceneManager.sceneCount == 1)
 					GUI.enabled = false;
 
+				var buttonStyle = LoadButtonStyle;
+				buttonStyle.fixedWidth = Screen.width - (90 + indent + PlayButtonStyle.margin.horizontal * 2);
 				if (GUILayout.Button(buttonLabel, LoadButtonStyle))
 				{
 					SceneManagerExtensions.SaveAndLoadScene(scenePath);
@@ -156,7 +222,6 @@ namespace LucasSerrano.SceneManagement.Editor
 
 				GUI.color = defaultColor;
 				GUI.enabled = true;
-
 
 				// ADD/REMOVE BUTTON
 				if (scene.isLoaded && SceneManager.sceneCount == 1)
@@ -179,7 +244,6 @@ namespace LucasSerrano.SceneManagement.Editor
 
 				GUI.enabled = true;
 
-
 				// PLAY BUTTON.
 				if (Application.isPlaying)
 					GUI.enabled = false;
@@ -191,7 +255,6 @@ namespace LucasSerrano.SceneManagement.Editor
 				GUI.enabled = true;
 			}
 			GUILayout.EndHorizontal();
-			EditorGUILayout.Space();
 		}
 
 		#endregion
@@ -210,8 +273,6 @@ namespace LucasSerrano.SceneManagement.Editor
 					_loadButtonStyle.alignment = TextAnchor.MiddleLeft;
 					_loadButtonStyle.fontStyle = FontStyle.Italic;
 				}
-
-				_loadButtonStyle.fixedWidth = Screen.width - (80 + PlayButtonStyle.margin.horizontal * 2);
 				return _loadButtonStyle;
 			}
 		}
@@ -227,7 +288,6 @@ namespace LucasSerrano.SceneManagement.Editor
 					_addButtonStyle = new GUIStyle(GUI.skin.button);
 					_addButtonStyle.fixedWidth = 30;
 				}
-
 				return _addButtonStyle;
 			}
 		}
@@ -326,6 +386,34 @@ namespace LucasSerrano.SceneManagement.Editor
 
 		// -----------------------------------------------------------------
 		#region Definitions
+
+		/// <summary> Data from a folder in the project. </summary>
+		private class Folder
+		{
+			public string path = "";
+			public string name = "";
+			public List<Folder> childFolders = new();
+			public List<SceneData> scenes = new();
+
+			public bool ContainsChild(string folderName)
+			{
+				foreach(var folder in childFolders)
+				{
+					if (folder.name == folderName)
+						return true;
+				}
+				return false;
+			}
+			public Folder GetChild(string folderName)
+			{
+				foreach(var folder in childFolders)
+				{
+					if (folder.name == folderName)
+						return folder;
+				}
+				return null;
+			}
+		}
 
 		/// <summary> Data from a scene in the project. </summary>
 		private class SceneData
