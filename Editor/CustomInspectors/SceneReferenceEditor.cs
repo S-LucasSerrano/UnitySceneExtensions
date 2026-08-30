@@ -8,7 +8,7 @@ namespace LucasSerrano.SceneManagement.Editor
 {
 	/// <summary> Custom inspector for the <see cref="SceneReference"/> class. </summary>
 	[CustomEditor(typeof(SceneReference))]
-	public class SceneReferenceEditor : UnityEditor.Editor 
+	public class SceneReferenceEditor : UnityEditor.Editor
 	{
 		// -----------------------------------------------------------------
 		#region Validation
@@ -136,7 +136,7 @@ namespace LucasSerrano.SceneManagement.Editor
 			// PLAY SCENE
 			if (Application.isPlaying)
 				GUI.enabled = false;
-			if (GUILayout.Button(EditorGUIUtility.IconContent("PlayButton On")))
+			if (GUILayout.Button(EditorGUIUtility.IconContent("PlayButton")))
 			{
 				if (SceneManagerExtensions.SaveAndLoadScene(scenePath))
 					EditorApplication.EnterPlaymode();
