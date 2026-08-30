@@ -1,20 +1,17 @@
-using System.Collections;
-using UnityEngine.Events;
 using UnityEngine;
+using UnityEngine.Events;
+using System.Collections;
 
 namespace LucasSerrano.SceneManagement
 {
-	/// <summary> Component that animates an effect meant to decorate the change between scenes. </summary>
+	/// <summary> Base class for all scene transition effects to inherit from. </summary>
 	public abstract class SceneTransitionEffect : MonoBehaviour
 	{
-		/// <summary> Duration in seconds of the transition animation. </summary>
-		[Space][SerializeField][Min(0)] public float Length = 1;
-
 		/// <summary> True while animating the effect. </summary>
-		public bool Animating => _animating;
-		protected bool _animating = false;
-		/// <summary> Currently active transition corroutine. </summary>	
-		protected Coroutine _transitionRoutine = null;
+		public bool Animating { get; private set; }
+
+		/// <summary> Currently active transition corroutine. </summary>
+		private Coroutine transitionRoutine = null;
 
 
 		// -----------------------------------------------------------------
@@ -23,7 +20,7 @@ namespace LucasSerrano.SceneManagement
 		{
 			// Start with the animation to false.
 			// But avoid canceling the animation if it has already started.
-			if (_animating == false)	
+			if (Animating == false)
 			{
 				SetTo(false);
 			}
@@ -34,11 +31,14 @@ namespace LucasSerrano.SceneManagement
 
 		/// <summary> Play this transition effect. </summary>
 		/// <param name="targetValue"> If true the effect appears, if false the effect disappears. </param>
-		public virtual void AnimateTransitionTo(bool targetValue) => AnimateTransitionTo(targetValue, null);
+		public void AnimateTransitionTo(bool targetValue)
+		{
+			AnimateTransitionTo(targetValue, null);
+		}
 
 		/// <summary> Play this transition effect. </summary>
 		/// <param name="onCompleted"> Callback invoked when the animation is completed. </param>
-		public virtual void AnimateTransitionTo(bool targetValue, UnityAction onCompleted)
+		public void AnimateTransitionTo(bool targetValue, UnityAction onCompleted)
 		{
 			if (this.gameObject.activeInHierarchy == false)
 			{
@@ -47,50 +47,35 @@ namespace LucasSerrano.SceneManagement
 				return;
 			}
 
-			if (_transitionRoutine != null) { StopCoroutine(_transitionRoutine); }
-			_transitionRoutine = StartCoroutine(TransitionRoutine(targetValue, onCompleted));
+			if (transitionRoutine != null) { StopCoroutine(transitionRoutine); }
+			transitionRoutine = StartCoroutine(TransitionRoutine(targetValue, onCompleted));
 		}
 
-		/// <summary> Corroutine that animates the transition value. </summary>
-		protected IEnumerator TransitionRoutine(bool value, UnityAction onCompleted)
+		/// Corroutine that calls the concrete implementation of this effect.
+		private IEnumerator TransitionRoutine(bool targetValue, UnityAction onCompleted)
 		{
-			float start = value == true ? 0 : 1;
-			float end = value == true ? 1 : 0;
-			float progress = 0;
-
-			_animating = true;
-
-			while(progress < 1)
-			{
-				progress += Time.deltaTime / Length;
-				TransitionValue = Mathf.Lerp(start, end, progress);
-				yield return null;
-			}
-
-			_animating = false;
-			TransitionValue = end;
+			Animating = true;
+			yield return ConcreteTransitionRoutine(targetValue);
+			Animating = false;
 
 			yield return null;
-
 			onCompleted?.Invoke();
 		}
+
+		/// <summary>
+		/// Concrete implementation of the transtion coroutine. It needs to animate the effect and wait for it to end. </summary>
+		protected abstract IEnumerator ConcreteTransitionRoutine(bool targetValue);
 
 		// ---------
 
 		/// <summary> Set the transition effect without animation. </summary>
-		/// <param name="targetValue"> If true the effect appears, if false the effect disappears. </param>
-		public virtual void SetTo(bool targetValue)
+		public void SetTo(bool targetValue)
 		{
-			if (_transitionRoutine != null) { StopCoroutine(_transitionRoutine); }
-
-			TransitionValue = targetValue == true ? 1 : 0;
+			if (transitionRoutine != null) { StopCoroutine(transitionRoutine); }
+			ConcreteSetDirectly(targetValue);
 		}
 
-
-		// -----------------------------------------------------------------
-
-		/// <summary> Transition value that changes with the animation in the range of 0 to 1. 
-		/// <br/> At 1 the effect is visible, at 0 is invisible. </summary>
-		public abstract float TransitionValue { get; protected set; }
+		/// <summary> Concrete implementation that skips the transition animation. </summary>
+		protected abstract void ConcreteSetDirectly(bool targetValue);
 	}
 }

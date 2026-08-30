@@ -6,7 +6,7 @@ namespace LucasSerrano.SceneManagement
 	/// <summary> Scene transition effect that fades the alpha of an UI image. </summary>
 	
 	[AddComponentMenu("Scene Management/Screen Fader")]
-	public class ScreenFader : SceneTransitionEffect
+	public class ScreenFader : LerpedSceneTransition
 	{
 		[SerializeField] public Image Image = null;
 
