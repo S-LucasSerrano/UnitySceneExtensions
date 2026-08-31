@@ -5,7 +5,7 @@ using System.Collections;
 namespace LucasSerrano.SceneManagement
 {
 	/// <summary> Base class for all scene transition effects to inherit from. </summary>
-	public abstract class SceneTransitionEffect : MonoBehaviour
+	public abstract class SceneTransition : MonoBehaviour
 	{
 		/// <summary> True while animating the effect. </summary>
 		public bool Animating { get; private set; }
@@ -22,7 +22,7 @@ namespace LucasSerrano.SceneManagement
 			// But avoid canceling the animation if it has already started.
 			if (Animating == false)
 			{
-				SetTo(false);
+				SetDirectlyTo(false);
 			}
 		}
 
@@ -31,18 +31,18 @@ namespace LucasSerrano.SceneManagement
 
 		/// <summary> Play this transition effect. </summary>
 		/// <param name="targetValue"> If true the effect appears, if false the effect disappears. </param>
-		public void AnimateTransitionTo(bool targetValue)
+		public void AnimateTo(bool targetValue)
 		{
-			AnimateTransitionTo(targetValue, null);
+			AnimateTo(targetValue, null);
 		}
 
 		/// <summary> Play this transition effect. </summary>
 		/// <param name="onCompleted"> Callback invoked when the animation is completed. </param>
-		public void AnimateTransitionTo(bool targetValue, UnityAction onCompleted)
+		public void AnimateTo(bool targetValue, UnityAction onCompleted)
 		{
 			if (this.gameObject.activeInHierarchy == false)
 			{
-				SetTo(targetValue);
+				SetDirectlyTo(targetValue);
 				onCompleted?.Invoke();
 				return;
 			}
@@ -69,7 +69,7 @@ namespace LucasSerrano.SceneManagement
 		// ---------
 
 		/// <summary> Set the transition effect without animation. </summary>
-		public void SetTo(bool targetValue)
+		public void SetDirectlyTo(bool targetValue)
 		{
 			if (transitionRoutine != null) { StopCoroutine(transitionRoutine); }
 			ConcreteSetDirectly(targetValue);

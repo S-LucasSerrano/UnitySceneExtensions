@@ -17,7 +17,7 @@ namespace LucasSerrano.SceneManagement
 		[Tooltip("Whether or not to use a transition effect to change the scene.")]
 		[SerializeField] public bool useTransition = true;
 		[Tooltip("Transition effect that will be used.")]
-		[SerializeField] public SceneTransitionEffect transitionEffect = null;
+		[SerializeField] public SceneTransition transitionEffect = null;
 
 		[Tooltip("Whether or not to load the scene using a loading screen.")]
 		[SerializeField] public bool useLoadingScreen = false;

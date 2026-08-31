@@ -46,7 +46,7 @@ namespace LucasSerrano.SceneManagement
 
 		/// If we are using or not a transition effect to change between scenes.
 		private bool _usingTransition = false;
-		private SceneTransitionEffect _transitionEffect = null;
+		private SceneTransition _transitionEffect = null;
 
 
 		// -----------------------------------------------------------------
@@ -79,17 +79,17 @@ namespace LucasSerrano.SceneManagement
 
 		public void TransitionToScene(string targetScene)
 		{
-			SceneTransitionEffect transitionEffect = FindObjectOfType<SceneTransitionEffect>(false);
+			SceneTransition transitionEffect = FindObjectOfType<SceneTransition>(false);
 			TransitionToScene(targetScene, transitionEffect);
 		}
 
 		/// <summary> Load target scene using this loading screen and playing the given transition effect. </summary>
-		public void TransitionToScene(SceneReference targetScene, SceneTransitionEffect transitionEffect)
+		public void TransitionToScene(SceneReference targetScene, SceneTransition transitionEffect)
 		{
 			TransitionToScene(targetScene.SceneName, transitionEffect);
 		}
 
-		public void TransitionToScene(string targetScene, SceneTransitionEffect transitionEffect)
+		public void TransitionToScene(string targetScene, SceneTransition transitionEffect)
 		{
 			_usingTransition = true;
 			_transitionEffect = transitionEffect;
@@ -97,7 +97,7 @@ namespace LucasSerrano.SceneManagement
 			if (transitionEffect == null)
 				LoadSceneAfterLoadingScreen(targetScene);
 			else
-				transitionEffect.AnimateTransitionTo(true, ()=> LoadSceneAfterLoadingScreen(targetScene));
+				transitionEffect.AnimateTo(true, ()=> LoadSceneAfterLoadingScreen(targetScene));
 		}
 
 		#endregion
@@ -139,9 +139,9 @@ namespace LucasSerrano.SceneManagement
 			if (_usingTransition)
 			{
 				if (_transitionEffect == null)
-					_transitionEffect = FindObjectOfType<SceneTransitionEffect>(false);
+					_transitionEffect = FindObjectOfType<SceneTransition>(false);
 				if (_transitionEffect != null)
-					_transitionEffect.AnimateTransitionTo(false);
+					_transitionEffect.AnimateTo(false);
 			}
 
 			// Reset.
@@ -164,10 +164,10 @@ namespace LucasSerrano.SceneManagement
 			if (_usingTransition)
 			{
 				if (_transitionEffect == null)
-					_transitionEffect = FindObjectOfType<SceneTransitionEffect>(false);
+					_transitionEffect = FindObjectOfType<SceneTransition>(false);
 
 				if (_transitionEffect != null)
-					_transitionEffect.AnimateTransitionTo(false);
+					_transitionEffect.AnimateTo(false);
 			}
 
 			yield return new WaitForEndOfFrame();       // AsyncOperation.allowSceneActivation doesn't work unless you wait this.
@@ -200,7 +200,7 @@ namespace LucasSerrano.SceneManagement
 				while (_transitionEffect.Animating)
 					yield return null;
 
-				_transitionEffect.AnimateTransitionTo(true);
+				_transitionEffect.AnimateTo(true);
 
 				while(_transitionEffect.Animating)
 					yield return null;

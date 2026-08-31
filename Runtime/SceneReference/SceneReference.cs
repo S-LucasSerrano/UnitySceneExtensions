@@ -36,7 +36,7 @@ namespace LucasSerrano.SceneManagement
 
 		/// If we are using or not a transition effect to change between scenes.
 		private bool _usingTransition = false;
-		private SceneTransitionEffect _transitionEffect = null;
+		private SceneTransition _transitionEffect = null;
 
 
 		// -----------------------------------------------------------------
@@ -71,17 +71,17 @@ namespace LucasSerrano.SceneManagement
 		/// <summary> Load this scene after playing a transition effect found in the scene. </summary>
 		public void TransitionToScene()
 		{
-			SceneTransitionEffect transitionEffect = FindObjectOfType<SceneTransitionEffect>(false);
+			SceneTransition transitionEffect = FindObjectOfType<SceneTransition>(false);
 			if (transitionEffect == null)
 			{
-				Debug.Log("Couldn't find a " + typeof(SceneTransitionEffect).Name + " while unloading " + SceneManager.GetActiveScene().name + ".");
+				Debug.Log("Couldn't find a " + typeof(SceneTransition).Name + " while unloading " + SceneManager.GetActiveScene().name + ".");
 			}
 
 			TransitionToScene(transitionEffect);
 		}
 
 		/// <summary> Load this scene after playing a transition efffect. </summary>
-		public void TransitionToScene(SceneTransitionEffect transitionEffect)
+		public void TransitionToScene(SceneTransition transitionEffect)
 		{
 			_usingTransition = true;
 			_transitionEffect = transitionEffect;
@@ -95,7 +95,7 @@ namespace LucasSerrano.SceneManagement
 			}
 			else
 			{ 
-				transitionEffect.AnimateTransitionTo(true, ()=> SceneManager.LoadScene(SceneName));
+				transitionEffect.AnimateTo(true, ()=> SceneManager.LoadScene(SceneName));
 			}
 		}
 
@@ -106,12 +106,12 @@ namespace LucasSerrano.SceneManagement
 			if (_usingTransition)
 			{
 				if (_transitionEffect == null)
-					_transitionEffect = FindObjectOfType<SceneTransitionEffect>(false);
+					_transitionEffect = FindObjectOfType<SceneTransition>(false);
 
 				if (_transitionEffect != null)
-					_transitionEffect.AnimateTransitionTo(false);
+					_transitionEffect.AnimateTo(false);
 				else
-					Debug.Log("Couldn't find a " + typeof(SceneTransitionEffect).Name + " after loading " + SceneName + ".", this);
+					Debug.Log("Couldn't find a " + typeof(SceneTransition).Name + " after loading " + SceneName + ".", this);
 			}
 
 			_transitionEffect = null;

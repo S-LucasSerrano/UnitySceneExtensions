@@ -6,7 +6,7 @@ namespace LucasSerrano.SceneManagement
 {
 	/// <summary> Abstract SceneTransition effect that lerps a value between 0 and 1 over time. <br/>
 	/// Tha value can be used by concrete implementations to animate any effect. </summary>
-	public abstract class LerpedSceneTransition : SceneTransitionEffect
+	public abstract class LerpedSceneTransition : SceneTransition
 	{
 		/// <summary> Duration in seconds of the transition animation. </summary>
 		[Space][SerializeField][Min(0)] public float Length = 1;
