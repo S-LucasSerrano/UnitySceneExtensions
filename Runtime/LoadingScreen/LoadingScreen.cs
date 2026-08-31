@@ -6,7 +6,7 @@ namespace LucasSerrano.SceneManagement
 {
 	/// <summary> Scriptable object that allows to load scenes using a loading screen. </summary>
 
-	[CreateAssetMenu(order = 202, menuName = "Loading Screen", fileName = "NewLoadingScreen")]
+	[CreateAssetMenu(order = 202, menuName = "Scene/Loading Screen", fileName = "NewLoadingScreen")]
 	public class LoadingScreen : ScriptableObject
 	{
 		// -----------------------------------------------------------------

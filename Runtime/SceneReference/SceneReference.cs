@@ -5,7 +5,7 @@ namespace LucasSerrano.SceneManagement
 {
 	/// <summary> Scriptable object that allows loading a specific scene. </summary>
 
-	[CreateAssetMenu(order =201, menuName="Scene Reference", fileName="NewSceneReference")]
+	[CreateAssetMenu(order =201, menuName="Scene/Scene Reference", fileName="NewSceneReference")]
 	public class SceneReference : ScriptableObject
 	{
 		// -----------------------------------------------------------------
