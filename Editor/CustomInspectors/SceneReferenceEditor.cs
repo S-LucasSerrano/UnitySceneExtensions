@@ -43,9 +43,9 @@ namespace LucasSerrano.SceneManagement.Editor
 		// When the user double clicks on the asset, open the scene.
 
 		[UnityEditor.Callbacks.OnOpenAsset]
-		private static bool OnDoubleClick(int instanceId, int line)
+		private static bool OnDoubleClick(EntityId entityId, int line)
 		{
-			var obj = EditorUtility.EntityIdToObject(instanceId);
+			var obj = EditorUtility.EntityIdToObject(entityId);
 			if (obj is SceneReference)
 			{
 				var sceneReference = (SceneReference)obj;
